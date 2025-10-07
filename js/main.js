@@ -299,44 +299,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ========================================
-    // A/Bテスト用の要素操作
+    // Optimize Next A/Bテスト用
     // ========================================
     
-    // URLパラメータでバリアントをシミュレート
-    const urlParams = new URLSearchParams(window.location.search);
-    const variant = urlParams.get('variant');
+    // Optimize Nextが自動的に以下のイベントを発火します：
+    // - event: 'experience_impression'
+    // - exp_variant_string: 'OPTX-[エクスペリエンスID]-[パターン番号]'
+    // - optx_experience: エクスペリエンス名
+    // - optx_variant: パターン名
     
-    if (variant === 'B') {
-        // Bパターン：オレンジ色のボタン
-        addToCartBtn.style.backgroundColor = '#FF6B00';
-        addToCartBtn.classList.add('variant-b');
-        
-        // Bパターン：ボタンの位置を商品タイトルの直下に移動
-        const productInfo = document.querySelector('.product-info');
-        const productTitle = document.querySelector('.product-title');
-        const purchaseButtons = document.querySelector('.purchase-buttons');
-        
-        // ボタンを上部に移動（オプション）
-        // productInfo.insertBefore(purchaseButtons, productTitle.nextSibling);
-        
-        // バリアント情報をdataLayerに送信
-        window.dataLayer.push({
-            'event': 'experiment_impression',
-            'experiment_id': 'button_test_001',
-            'variant_id': 'B'
+    // デバッグ用: dataLayerでOptimize Nextのイベントを監視
+    window.dataLayer.push(function() {
+        this.addEventListener('experience_impression', function(event) {
+            console.log('Optimize Next Experience Impression:', {
+                exp_variant_string: event.exp_variant_string,
+                optx_experience: event.optx_experience,
+                optx_variant: event.optx_variant
+            });
         });
-        
-        console.log('A/B Test - Variant B active');
-    } else {
-        // Aパターン（デフォルト）
-        window.dataLayer.push({
-            'event': 'experiment_impression',
-            'experiment_id': 'button_test_001',
-            'variant_id': 'A'
-        });
-        
-        console.log('A/B Test - Variant A active');
-    }
+    });
+    
+    // Optimize Nextでは以下のような変更を行います：
+    // パターンA（オリジナル）: ボタンは青色 (#1E90FF)
+    // パターンB: ボタンをオレンジ色 (#FF6B00) に変更
+    // ※実際の変更はOptimize Nextの管理画面で視覚的に行います
     
     // ========================================
     // デバッグヘルパー
